@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    uniCenta oPOS - Touch friendly Point Of Sale
+    Contributed by: Julian Roberts, Brockley Estate, Tasmania
+
+    This file is part of uniCenta oPOS.
+
+    uniCenta oPOS is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    uniCenta oPOS is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with uniCenta oPOS.  If not, see <http://www.gnu.org/licenses/>.
+ -->
+
+<output>
+
+<display>
+	<line><text align="left" length="10">Total</text><text align="right" length="10">${ticket.printTotal()}</text></line>
+	<line><text align="center" length="20">Thank you</text></line>
+</display>
+
+<ticket printer="2">
+        	<image align="left">Printer.Ticket.Logo</image>
+       	<line></line>
+
+            	<line><text align="left" length="105">NPF-LAN ApS</text></line>
+           	<line><text align="left" length="105">Landbrugsvej 10</text></line>
+       	<line><text align="left" length="105">5260 Odense S</text></line>
+        	<line><text align="left" length="105">Email: mail@npf.dk</text></line>
+        	<line><text align="left" length="105">CVR: 35243151</text></line>
+        	<line></line>
+
+	#if ($ticket.getCustomer())
+	 	<line><text align="left" length="15">Kontonr.#:</text><text>${ticket.getCustomer().printTaxid()}</text></line>
+		<line><text align="left" length="15">Kunde:</text><text>${ticket.getCustomer().printName()}</text></line>
+	#end
+
+	<line></line>
+
+	#if (${ticket.ticketType} == 0)
+		<line><text align="left" length="15">Bonnr.</text><text>${ticket.printId()}</text></line>
+	#end
+
+	#if (${ticket.ticketType} == 1)
+		<line><text align="left" length="15">Kreditering:</text><text>${ticket.printId()}</text></line>
+	#end
+		<line><text align="left" length="15">Dato:</text><text>${ticket.printDate()}</text></line>
+
+
+
+		<line><text align="left" length="15">Kasse: </text><text>${ticket.getHostname()}</text></line>
+		<line><text align="left" length="15">Ekspedient:</text><text>${ticket.printUser()}</text></line>
+		<line></line>
+		<line><text align ="left" length="70" bold="true">Vare</text><text align ="right" length="12" bold="true">Stykpris</text><text align ="right" length="10" bold="true">Antal</text><text align ="right" length="15" bold="true">I alt</text></line>
+		<line><text align="left" length="108" bold="true">------------------------------------------------------------------------------------------------------------</text></line>
+
+#foreach ($ticketline in $ticket.getLines())
+	<line>
+
+	#if ($ticketline.isProductCom())
+		<text align ="left" length="70">*${ticketline.printName()}</text>
+	#else
+		<text align ="left" length="70">${ticketline.printName()}</text>
+	#end
+		<text align ="right" length="12">${ticketline.printPriceTax()}</text>
+		<text align ="right" length="10">x${ticketline.printMultiply()}</text>
+		<text align ="right" length="15">${ticketline.printValue()}</text>
+	</line>
+
+	#if ($ticketline.productAttSetInstId)
+		<line><text align ="left" length="42">${ticketline.productAttSetInstDesc}</text></line>
+	#end
+#end
+	<line><text align="left" length="108" bold="true">------------------------------------------------------------------------------------------------------------</text></line>
+
+
+	<line></line>
+	<line size="1"><text align ="right" length="92" bold="true">Total</text><text align ="right" length="15" bold="true">${ticket.printTotal()}</text></line>
+	<line><text align ="right" length="92">Heraf moms:</text><text align ="right" length="15">${ticket.printTax()}</text></line>
+	<line></line>
+
+
+
+#foreach ($paymentline in $ticket.payments)
+
+	#if ($paymentline.name == "cash")
+		<line><text align ="right" length="92" bold="true">Betaling:</text><text align ="right" length="15" bold="true">Kontant</text></line>
+	#end
+
+	#if ($paymentline.name == "cashrefund")
+		<line><text align ="right" length="92" bold="true">Betaling:</text><text align ="right" length="15" bold="true">Retur</text></line>
+	#end
+
+	#if ($paymentline.name == "magcard")
+		<line><text align ="right" length="92" bold="true">Betaling:</text><text align ="right" length="15" bold="true">Betalingskort</text></line>
+	#end
+
+	#if ($paymentline.name == "cheque")
+		<line><text align ="right" length="92" bold="true">Betaling:</text><text align ="right" length="15" bold="true">Check</text></line>
+	#end
+
+	#if ($paymentline.name == "chequerefund")
+		<line><text align ="right" length="92" bold="true">Betaling:</text><text align ="right" length="15" bold="true">Check retur</text></line>
+	#end
+
+	#if ($paymentline.name == "paperin")
+		<line></line>
+		<line><text bold="true">Note</text></line>
+		<line><text align ="right" length="108">${paymentline.printTotal()}</text></line>
+	#end
+
+	#if ($paymentline.name == "paperout")
+		<line></line>
+		<line><text bold="true">Note Refund</text></line>
+		<line><text align ="right" length="108">${paymentline.printTotal()}</text></line>
+	#end
+
+	#if ($paymentline.name == "free")
+		<line><text align ="right" length="92" bold="true">Betaling:</text><text align ="right" length="15" bold="true">Mobile Pay</text></line>
+	#end
+
+	#if ($paymentline.name == "debt")
+		<line><text align ="right" length="92" bold="true">Betaling:</text><text align ="right" length="15" bold="true">Kontokøb</text></line>
+		#if ($ticket.getCustomer())
+			<line><text align ="right" length="92" bold="true">Kredit status:</text><text align ="right" length="15" bold="true">${ticket.getCustomer().printCurDebt()}</text></line>
+		#end
+	#end
+#end
+
+
+<!-- #foreach ($taxinfo in $taxes) -->
+<!--        #set( $taxline = $ticket.getTaxLine($taxinfo)) -->
+<!--       <line> -->
+<!--            <text align ="left" length="18">${taxline.getTaxInfo()}</text> -->
+<!--            <text align ="right" length="12">${taxline.printSubTotal()}</text> -->
+<!--            <text align ="right" length="12">${taxline.printTax()}</text> -->
+<!--        </line> -->
+<!--#end -->
+
+</ticket>
+
+#foreach ($paymentline in $ticket.payments)
+	#if ($paymentline.name == "cash")
+		<opendrawer/>
+	#end
+	#if ($paymentline.name == "cashrefund")
+		<opendrawer/>
+	#end
+#end
+
+</output>
