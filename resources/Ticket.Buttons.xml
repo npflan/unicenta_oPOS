@@ -1,0 +1,4 @@
+<!-- Add to bottom part inside configuration element. -->
+
+    <!-- Add crew discount -->
+        <event key="ticket.addline" code="script.Event.Addline" />

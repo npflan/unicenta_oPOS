@@ -1,0 +1,34 @@
+import com.openbravo.pos.forms.DataLogicSales;
+import com.openbravo.pos.forms.DataLogicSystem;
+import com.openbravo.data.loader.Session;
+import com.openbravo.format.Formats;
+import java.lang.Math; 
+import java.util.*;
+import java.text.*;
+import com.openbravo.pos.ticket.ProductInfoExt; 
+import com.openbravo.pos.ticket.TicketLineInfo;
+import com.openbravo.format.Formats;
+import com.openbravo.pos.ticket.TicketProductInfo; 
+import java.lang.Math; 
+import java.util.*;
+import java.text.*;
+import javax.swing.JOptionPane;
+
+// -------------------------------------------------------------------------------------------
+// Multi price 1, 2 or ... Begin
+
+if (line.getProperty("Multi price") != null){
+// System.out.println("Multi price is present in properties of product.");
+ if ((line.getProperty("Multi price").equals("Yes")) && (ticket.getCustomer()!= null) && ((ticket.getCustomer().getFax()) != null)){
+
+      value = (ticket.getCustomer().getFax());
+      Price = line.getProperty(value);
+      Double newPrice = new Double(Price);
+//      line.setPrice(newPrice);
+      line.setPriceTax(newPrice);
+//      System.out.println("newPrice=" + newPrice);
+ }
+}
+
+// Multi price 1, 2 or ... End
+// ------------------------------------------
